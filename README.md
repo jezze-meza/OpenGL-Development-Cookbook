@@ -1,4 +1,2 @@
-# opengl33_dev_cookbook_2013
-OpenGL Development Cookbook (book code with build and configuration fixes)
-
-My fixes: patched source files and added common solution file.
+# OpenGL Development Cookbook by Mobeen Movania
+OpenGL Development Cookbook was written presumably for all platforms, yet its source code is Windows *only*. This repo fixes that problem.  

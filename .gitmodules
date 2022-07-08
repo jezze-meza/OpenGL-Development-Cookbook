@@ -1,9 +1,6 @@
 [submodule "externals/freeglut"]
 	path = externals/freeglut
 	url = https://github.com/FreeGLUTProject/freeglut
-[submodule "externals/glew"]
-	path = externals/glew
-	url = https://github.com/nigels-com/glew
 [submodule "externals/soil"]
 	path = externals/soil
 	url = https://github.com/paralin/soil

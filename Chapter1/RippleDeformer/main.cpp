@@ -59,7 +59,7 @@ int state = 0, oldX=0, oldY=0;
 float rX=25, rY=-40, dist = -7;
 
 //current time
-float time = 0;
+float ttime = 0;
 
 //mosue click handler
 void OnMouseDown(int button, int s, int x, int y)
@@ -195,7 +195,7 @@ void OnIdle() {
 //display callback 
 void OnRender() {
 	//get the elapse time
-	time = glutGet(GLUT_ELAPSED_TIME)/1000.0f * SPEED;
+	ttime = glutGet(GLUT_ELAPSED_TIME)/1000.0f * SPEED;
 
 	//clear the colour and depth buffers
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -210,7 +210,7 @@ void OnRender() {
 	shader.Use();
 		//set the shader uniforms
 		glUniformMatrix4fv(shader("MVP"), 1, GL_FALSE, glm::value_ptr(MVP));
-		glUniform1f(shader("time"), time);
+		glUniform1f(shader("time"), ttime);
 			//draw the mesh triangles
 			glDrawElements(GL_TRIANGLES, TOTAL_INDICES, GL_UNSIGNED_SHORT, 0);
 

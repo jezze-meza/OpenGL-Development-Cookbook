@@ -1,5 +1,5 @@
 #pragma once
-#include "renderableobject.h"
+#include "RenderableObject.h"
 
 class CTexturedPlane : public RenderableObject
 {

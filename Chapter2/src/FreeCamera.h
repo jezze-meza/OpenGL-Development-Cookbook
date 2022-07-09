@@ -1,5 +1,5 @@
 #pragma once
-#include "abstractcamera.h"
+#include "AbstractCamera.h"
 
 class CFreeCamera :
 	public CAbstractCamera

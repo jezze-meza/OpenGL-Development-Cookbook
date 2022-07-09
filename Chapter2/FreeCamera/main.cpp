@@ -1,6 +1,12 @@
 #define _USE_MATH_DEFINES
 #include <GL/glew.h>
 #include <GL/freeglut.h>
+
+#ifdef __linux__
+#include <GL/glx.h>
+#include <X11/keysymdef.h>
+#endif
+
 #include <iostream>
 
 
@@ -8,11 +14,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "..\..\src\GLSLShader.h"
+#include "GLSLShader.h"
+#include "FreeCamera.h"
 
 #define GL_CHECK_ERRORS assert(glGetError()== GL_NO_ERROR);
 
-#ifdef _DEBUG 
+#ifdef _WIN32
+#ifdef _DEBUG
 #pragma comment(lib, "glew_static_x86_d.lib")
 #pragma comment(lib, "freeglut_static_x86_d.lib")
 #pragma comment(lib, "SOIL_static_x86_d.lib")
@@ -20,6 +28,7 @@
 #pragma comment(lib, "glew_static_x86.lib")
 #pragma comment(lib, "freeglut_static_x86.lib")
 #pragma comment(lib, "SOIL_static_x86.lib")
+#endif
 #endif
 
 using namespace std;
@@ -36,8 +45,7 @@ const float EPSILON2 = EPSILON*EPSILON;
 int state = 0, oldX=0, oldY=0;
 float rX=0, rY=0, fov = 45;
 
-#include "..\..\src\FreeCamera.h"
-
+#ifdef _WIN32
 //virtual key codes
 const int VK_W = 0x57;
 const int VK_S = 0x53;
@@ -45,6 +53,16 @@ const int VK_A = 0x41;
 const int VK_D = 0x44;
 const int VK_Q = 0x51;
 const int VK_Z = 0x5a;
+#else
+
+const KeySym VK_W = XK_w;
+const KeySym VK_S = XK_s;
+const KeySym VK_A = XK_a;
+const KeySym VK_D = XK_d;
+const KeySym VK_Q = XK_q;
+const KeySym VK_Z = XK_z;
+
+#endif
 
 //delta time
 float dt = 0;
@@ -76,7 +94,7 @@ GLuint checkerTextureID;
 
 
 //checkered plane object
-#include "..\..\src\TexturedPlane.h"
+#include "TexturedPlane.h"
 CTexturedPlane* checker_plane;
  
 //mouse move filtering function
@@ -150,10 +168,10 @@ void OnMouseMove(int x, int y)
 void OnInit() {
 	GL_CHECK_ERRORS
 	//generate the checker texture
-	GLubyte data[128][128]={0};
+	GLubyte data[128][128];
 	for(int j=0;j<128;j++) {
 		for(int i=0;i<128;i++) {
-			data[i][j]=(i<=64 && j<=64 || i>64 && j>64 )?255:0;
+			data[i][j]=( (i<=64 && j<=64) || (i>64 && j>64) )?255:0;
 		}
 	}
 	//generate texture object
@@ -226,10 +244,26 @@ void OnResize(int w, int h) {
 	cam.SetupProjection(45, (GLfloat)w/h); 
 }
 
+#ifdef __linux__
+bool GetAsyncKeyState(KeySym sym) {
+    Display *display = glXGetCurrentDisplay();
+	// determine if the key "sym" is pressed or not
+    // this routine from "Introduction to the X Window System", 1989, p. 388
+
+    KeyCode code = XKeysymToKeycode(display, sym);
+    if (code == NoSymbol) return false;
+    static char key_vector[32];
+    XQueryKeymap(display, key_vector);
+    return (key_vector[code/8] >> (code&7)) & 1;
+}
+#endif
+
 //idle event processing
 void OnIdle() {
 
 	//handle the WSAD, QZ key events to move the camera around
+
+#ifdef _WIN32
 	if( GetAsyncKeyState(VK_W) & 0x8000) {
 		cam.Walk(dt);
 	}
@@ -253,6 +287,32 @@ void OnIdle() {
 	if( GetAsyncKeyState(VK_Z) & 0x8000) {
 		cam.Lift(-dt);
 	}
+#else
+	if( GetAsyncKeyState(VK_W) ) {
+		cam.Walk(dt);
+	}
+
+	if( GetAsyncKeyState(VK_S) ) {
+		cam.Walk(-dt);
+	}
+
+	if( GetAsyncKeyState(VK_A) ) {
+		cam.Strafe(-dt);
+	}
+
+	if( GetAsyncKeyState(VK_D) ) {
+		cam.Strafe(dt);
+	}
+
+	if( GetAsyncKeyState(VK_Q) ) {
+		cam.Lift(dt);
+	}
+
+	if( GetAsyncKeyState(VK_Z) ) {
+		cam.Lift(-dt);
+	}
+#endif
+
 
 	glm::vec3 t = cam.GetTranslation(); 
 	if(glm::dot(t,t)>EPSILON2) {

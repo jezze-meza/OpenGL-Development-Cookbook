@@ -6,7 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "..\..\src\GLSLShader.h"
+#include "GLSLShader.h"
 
 #define GL_CHECK_ERRORS assert(glGetError()== GL_NO_ERROR);
 
@@ -27,15 +27,15 @@ const int WIDTH  = 1280;
 const int HEIGHT = 960;
  
 //Grid object
-#include "..\..\src\Grid.h"
+#include "Grid.h"
 CGrid* grid;
 
 //Unit colour cube
-#include "..\..\src\UnitColorCube.h"
+#include "UnitColorCube.h"
 CUnitColorCube* cube;
 
 //Quad
-#include "..\..\src\Quad.h"
+#include "Quad.h"
 CQuad* mirror;
 
 //projection and modelview matrix

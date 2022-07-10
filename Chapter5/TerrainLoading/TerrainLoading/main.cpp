@@ -8,7 +8,7 @@
 
 #include <SOIL.h>
 
-#include "..\..\src\GLSLShader.h"
+#include "GLSLShader.h"
 
 #define GL_CHECK_ERRORS assert(glGetError()== GL_NO_ERROR);
 

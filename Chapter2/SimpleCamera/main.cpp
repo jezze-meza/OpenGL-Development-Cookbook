@@ -2,6 +2,11 @@
 #include <GL/freeglut.h>
 #include <iostream>
 
+#ifdef __linux__
+#include <GL/glx.h>
+#include <X11/keysymdef.h>
+#endif
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp> 
 #include <glm/gtc/type_ptr.hpp>
@@ -12,6 +17,7 @@
 
 #define GL_CHECK_ERRORS assert(glGetError()== GL_NO_ERROR);
 
+#ifdef _WIN32
 #ifdef _DEBUG 
 #pragma comment(lib, "glew_static_x86_d.lib")
 #pragma comment(lib, "freeglut_static_x86_d.lib")
@@ -21,6 +27,8 @@
 #pragma comment(lib, "freeglut_static_x86.lib")
 #pragma comment(lib, "SOIL_static_x86.lib")
 #endif
+#endif
+
 
 using namespace std;
 
@@ -35,15 +43,24 @@ float rX=0, rY=135, dist =0;
 CTargetCamera cam; 
 CGrid* grid;
 
-
-
+#ifdef _WIN32
+//virtual key codes
 const int VK_W = 0x57;
 const int VK_S = 0x53;
 const int VK_A = 0x41;
 const int VK_D = 0x44;
 const int VK_Q = 0x51;
 const int VK_Z = 0x5a;
+#else
 
+const KeySym VK_W = XK_w;
+const KeySym VK_S = XK_s;
+const KeySym VK_A = XK_a;
+const KeySym VK_D = XK_d;
+const KeySym VK_Q = XK_q;
+const KeySym VK_Z = XK_z;
+
+#endif
 float dt = 0;
 const float MOVE_SPEED = 0.125f;
   
@@ -163,28 +180,64 @@ void OnResize(int w, int h) {
 }
 
 
+#ifdef __linux__
+bool GetAsyncKeyState(KeySym sym) {
+    Display *display = glXGetCurrentDisplay();
+
+    KeyCode code = XKeysymToKeycode(display, sym);
+    if (code == NoSymbol) return false;
+    static char key_vector[32];
+    XQueryKeymap(display, key_vector);
+    return (key_vector[code/8] >> (code&7)) & 1;
+}
+#endif
+
 void OnIdle() {
 	bool bPressed = false;
 	float dx=0, dy=0;
+
+		//handle the WSAD, QZ key events to move the camera around
+#ifdef _WIN32
 	if( GetAsyncKeyState(VK_W) & 0x8000) {
 		dy += (MOVE_SPEED);
 		bPressed = true;
 	}
-	
+
 	if( GetAsyncKeyState(VK_S) & 0x8000) {
 		dy -= (MOVE_SPEED);
 		bPressed = true;
 	}
-		
+
 	if( GetAsyncKeyState(VK_A) & 0x8000) {
 		dx -= (MOVE_SPEED);
 		bPressed = true;
 	}
-		
+
 	if( GetAsyncKeyState(VK_D) & 0x8000) {
 		dx += (MOVE_SPEED);
 		bPressed = true;
 	}
+#else
+	if( GetAsyncKeyState(VK_W) ) {
+		dy += (MOVE_SPEED);
+		bPressed = true;
+	}
+
+	if( GetAsyncKeyState(VK_S) ) {
+		dy -= (MOVE_SPEED);
+		bPressed = true;
+	}
+
+	if( GetAsyncKeyState(VK_A) ) {
+		dx -= (MOVE_SPEED);
+		bPressed = true;
+	}
+
+	if( GetAsyncKeyState(VK_D) ) {
+		dx += (MOVE_SPEED);
+		bPressed = true;
+	}
+#endif
 
 	if(bPressed)
 		cam.Move(dx, dy);
@@ -219,7 +272,7 @@ void OnKey(unsigned char key, int x, int y) {
  
 
 
-void main(int argc, char** argv) {
+int main(int argc, char** argv) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);	
 	glutInitContextVersion (3, 3);
@@ -258,4 +311,6 @@ void main(int argc, char** argv) {
 	glutKeyboardFunc(OnKey); 
 	glutIdleFunc(OnIdle);
 	glutMainLoop();	
+
+	return 0;
 }

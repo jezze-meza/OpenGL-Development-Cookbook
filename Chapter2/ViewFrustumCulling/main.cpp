@@ -3,6 +3,11 @@
 #include <GL/freeglut.h>
 #include <iostream>
 
+#ifdef __linux__
+#include <GL/glx.h>
+#include <X11/keysymdef.h>
+#endif
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -11,6 +16,7 @@
 
 #define GL_CHECK_ERRORS assert(glGetError()== GL_NO_ERROR);
 
+#ifdef _WIN32
 #ifdef _DEBUG 
 #pragma comment(lib, "glew_static_x86_d.lib")
 #pragma comment(lib, "freeglut_static_x86_d.lib")
@@ -20,12 +26,17 @@
 #pragma comment(lib, "freeglut_static_x86.lib")
 #pragma comment(lib, "SOIL_static_x86.lib")
 #endif
+#endif
+
 
 using namespace std;
 
 //screen size
 const int WIDTH  = 1280;
 const int HEIGHT = 960;
+
+// char buffer size
+const int MAX_PATH = 512;
 
 //shaders for this recipe
 GLSLShader shader;
@@ -65,6 +76,7 @@ float rX=-135, rY=45, fov = 45;
 
 #include "FreeCamera.h"
  
+#ifdef _WIN32
 //virtual key codes
 const int VK_W = 0x57;
 const int VK_S = 0x53;
@@ -72,6 +84,16 @@ const int VK_A = 0x41;
 const int VK_D = 0x44;
 const int VK_Q = 0x51;
 const int VK_Z = 0x5a;
+#else
+
+const KeySym VK_W = XK_w;
+const KeySym VK_S = XK_s;
+const KeySym VK_A = XK_a;
+const KeySym VK_D = XK_d;
+const KeySym VK_Q = XK_q;
+const KeySym VK_Z = XK_z;
+
+#endif
 
 //delta time
 float dt = 0;
@@ -451,10 +473,24 @@ void OnResize(int w, int h) {
 	glViewport (0, 0, (GLsizei) w, (GLsizei) h);
 }
 
+
+#ifdef __linux__
+bool GetAsyncKeyState(KeySym sym) {
+    Display *display = glXGetCurrentDisplay();
+
+    KeyCode code = XKeysymToKeycode(display, sym);
+    if (code == NoSymbol) return false;
+    static char key_vector[32];
+    XQueryKeymap(display, key_vector);
+    return (key_vector[code/8] >> (code&7)) & 1;
+}
+#endif
+
 //idle callback function
 void OnIdle() {
 
 	//handle the WSAD, QZ key events to move the camera around
+#ifdef _WIN32
 	if( GetAsyncKeyState(VK_W) & 0x8000) {
 		pCurrentCam->Walk(dt);
 	}
@@ -477,6 +513,30 @@ void OnIdle() {
 	if( GetAsyncKeyState(VK_Z) & 0x8000) {
 		pCurrentCam->Lift(-dt);
 	}
+#else
+	if( GetAsyncKeyState(VK_W) ) {
+		pCurrentCam->Walk(dt);
+	}
+
+	if( GetAsyncKeyState(VK_S) ) {
+		pCurrentCam->Walk(-dt);
+	}
+	if( GetAsyncKeyState(VK_A) ) {
+		pCurrentCam->Strafe(-dt);
+	}
+
+	if( GetAsyncKeyState(VK_D) ) {
+		pCurrentCam->Strafe(dt);
+	}
+
+	if( GetAsyncKeyState(VK_Q) ) {
+		pCurrentCam->Lift(dt);
+	}
+
+	if( GetAsyncKeyState(VK_Z) ) {
+		pCurrentCam->Lift(-dt);
+	}
+#endif
 
 	glm::vec3 t = pCurrentCam->GetTranslation(); 
 
@@ -558,7 +618,7 @@ void OnRender() {
 	//check the query result to get the total number of visible points
 	GLuint res;
 	glGetQueryObjectuiv(query, GL_QUERY_RESULT, &res);
-	sprintf_s(buffer, "FPS: %3.3f :: Total visible points: %3d",fps, res);
+	sprintf(buffer, "FPS: %3.3f :: Total visible points: %3d",fps, res);
 	glutSetWindowTitle(buffer);
 
 	//set the normal shader

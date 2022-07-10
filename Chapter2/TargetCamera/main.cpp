@@ -3,6 +3,10 @@
 #include <GL/freeglut.h>
 #include <iostream>
 
+#ifdef __linux__
+#include <GL/glx.h>
+#include <X11/keysymdef.h>
+#endif
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -12,6 +16,7 @@
 
 #define GL_CHECK_ERRORS assert(glGetError()== GL_NO_ERROR);
 
+#ifdef _WIN32
 #ifdef _DEBUG 
 #pragma comment(lib, "glew_static_x86_d.lib")
 #pragma comment(lib, "freeglut_static_x86_d.lib")
@@ -20,6 +25,7 @@
 #pragma comment(lib, "glew_static_x86.lib")
 #pragma comment(lib, "freeglut_static_x86.lib")
 #pragma comment(lib, "SOIL_static_x86.lib")
+#endif
 #endif
 
 using namespace std;
@@ -34,6 +40,7 @@ float rX=0, rY=0, dist = 10;
 
 #include "TargetCamera.h"
 
+#ifdef _WIN32
 //virtual key codes
 const int VK_W = 0x57;
 const int VK_S = 0x53;
@@ -41,6 +48,16 @@ const int VK_A = 0x41;
 const int VK_D = 0x44;
 const int VK_Q = 0x51;
 const int VK_Z = 0x5a;
+#else
+
+const KeySym VK_W = XK_w;
+const KeySym VK_S = XK_s;
+const KeySym VK_A = XK_a;
+const KeySym VK_D = XK_d;
+const KeySym VK_Q = XK_q;
+const KeySym VK_Z = XK_z;
+
+#endif
 
 //delta time
 float dt = 0;
@@ -161,10 +178,10 @@ void OnMouseMove(int x, int y)
 void OnInit() {
 	GL_CHECK_ERRORS
 	//generate the checker texture
-	GLubyte data[128][128]={0};
+	GLubyte data[128][128];
 	for(int j=0;j<128;j++) {
 		for(int i=0;i<128;i++) {
-			data[i][j]=(i<=64 && j<=64 || i>64 && j>64 )?255:0;
+			data[i][j]=( (i<=64 && j<=64) || (i>64 && j>64) )?255:0;
 		}
 	}
 
@@ -233,10 +250,25 @@ void OnResize(int w, int h) {
 	cam.SetupProjection(45, (GLfloat)w/h); 
 }
 
+
+#ifdef __linux__
+bool GetAsyncKeyState(KeySym sym) {
+    Display *display = glXGetCurrentDisplay();
+
+    KeyCode code = XKeysymToKeycode(display, sym);
+    if (code == NoSymbol) return false;
+    static char key_vector[32];
+    XQueryKeymap(display, key_vector);
+    return (key_vector[code/8] >> (code&7)) & 1;
+}
+#endif
+
 //idle event processing
 void OnIdle() {
 	bool bPressed = false;
 	float dx=0, dy=0;
+
+#ifdef _WIN32
 	//handle the WSAD, QZ key events to move the camera around
 	if( GetAsyncKeyState(VK_W) & 0x8000) {
 		dy += (MOVE_SPEED*dt);
@@ -257,6 +289,28 @@ void OnIdle() {
 		dx += (MOVE_SPEED*dt);
 		bPressed = true;
 	}
+#else
+
+	if( GetAsyncKeyState(VK_W) ) {
+		dy += (MOVE_SPEED*dt);
+		bPressed = true;
+	}
+
+	if( GetAsyncKeyState(VK_S) ) {
+		dy -= (MOVE_SPEED*dt);
+		bPressed = true;
+	}
+
+	if( GetAsyncKeyState(VK_A) ) {
+		dx -= (MOVE_SPEED*dt);
+		bPressed = true;
+	}
+
+	if( GetAsyncKeyState(VK_D) ) {
+		dx += (MOVE_SPEED*dt);
+		bPressed = true;
+	}
+#endif
 
 	if(bPressed)
 		cam.Move(dx, dy);

@@ -8,7 +8,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "..\..\src\GLSLShader.h"
+#include "GLSLShader.h"
 
 #define GL_CHECK_ERRORS assert(glGetError()== GL_NO_ERROR);
 
@@ -32,7 +32,7 @@ const int HEIGHT = 960;
 int state = 0, oldX=0, oldY=0;
 float rX=0, rY=0, dist = 10;
 
-#include "..\..\src\TargetCamera.h"
+#include "TargetCamera.h"
 
 //virtual key codes
 const int VK_W = 0x57;
@@ -74,7 +74,7 @@ GLuint checkerTextureID;
 
 
 //checkered plane object
-#include "..\..\src\TexturedPlane.h"
+#include "TexturedPlane.h"
 CTexturedPlane* checker_plane;
 
 //mouse move filtering function

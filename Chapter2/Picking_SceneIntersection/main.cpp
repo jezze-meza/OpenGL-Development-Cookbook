@@ -6,7 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "..\..\src\GLSLShader.h"
+#include "GLSLShader.h"
 
 #define GL_CHECK_ERRORS assert(glGetError()== GL_NO_ERROR);
 
@@ -34,7 +34,7 @@ const float EPSILON2 = EPSILON*EPSILON;
 int state = 0, oldX=0, oldY=0;
 float rX=0, rY=0, fov = 45;
 
-#include "..\..\src\FreeCamera.h"
+#include "FreeCamera.h"
 
 //virtual key codes
 const int VK_W = 0x57;
@@ -54,11 +54,11 @@ float current_time=0, last_time=0;
 CFreeCamera cam;
 
 //grid object
-#include "..\..\src\Grid.h"
+#include "Grid.h"
 CGrid* grid;
 
 //unit cube object
-#include "..\..\src\UnitCube.h"
+#include "UnitCube.h"
 CUnitCube* cube;
 
 //modelview and projection matrices

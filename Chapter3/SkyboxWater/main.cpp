@@ -9,12 +9,13 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 
-#include "..\src\GLSLShader.h"
+#include "GLSLShader.h"
  
 #include <SOIL.h>
 
 #define GL_CHECK_ERRORS assert(glGetError()== GL_NO_ERROR);
 
+#ifdef _WIN32
 #ifdef _DEBUG 
 #pragma comment(lib, "glew_static_x86_d.lib")
 #pragma comment(lib, "freeglut_static_x86_d.lib")
@@ -24,6 +25,8 @@
 #pragma comment(lib, "freeglut_static_x86.lib")
 #pragma comment(lib, "SOIL_static_x86.lib")
 #endif
+#endif
+
 
 using namespace std;
 
@@ -36,11 +39,11 @@ glm::mat4 MV = glm::mat4(1);
 int state = 0, oldX=0, oldY=0;
 float rX=11, rY=64, dist = -7;
  
-#include "../src/skybox.h"
+#include "Skybox.h"
 CSkybox* skybox;
 GLuint skyboxTextureID;
 
-#include "../src/WaterSurface.h"
+#include "WaterSurface.h"
 CWaterSurface* water;
 
 

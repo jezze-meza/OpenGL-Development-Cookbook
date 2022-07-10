@@ -20,6 +20,7 @@
 
 #define GL_CHECK_ERRORS assert(glGetError()== GL_NO_ERROR);
 
+#ifdef _WIN32
 #ifdef _DEBUG 
 #pragma comment(lib, "glew_static_x86_d.lib")
 #pragma comment(lib, "freeglut_static_x86_d.lib")
@@ -29,6 +30,8 @@
 #pragma comment(lib, "freeglut_static_x86.lib")
 #pragma comment(lib, "SOIL_static_x86.lib")
 #endif
+#endif
+
 
 using namespace std;
 

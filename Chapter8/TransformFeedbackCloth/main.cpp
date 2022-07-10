@@ -15,6 +15,7 @@
 
 
 using namespace std;
+#ifdef _WIN32
 #ifdef _DEBUG 
 #pragma comment(lib, "glew_static_x86_d.lib")
 #pragma comment(lib, "freeglut_static_x86_d.lib")
@@ -24,6 +25,8 @@ using namespace std;
 #pragma comment(lib, "freeglut_static_x86.lib")
 #pragma comment(lib, "SOIL_static_x86.lib")
 #endif
+#endif
+
 
 #define CHECK_GL_ERRORS assert(glGetError()==GL_NO_ERROR);
 

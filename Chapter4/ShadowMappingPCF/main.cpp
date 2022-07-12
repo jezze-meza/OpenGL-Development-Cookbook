@@ -12,7 +12,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 
-#include "../src/GLSLShader.h"
+#include "GLSLShader.h"
 
 #define GL_CHECK_ERRORS assert(glGetError()== GL_NO_ERROR);
 

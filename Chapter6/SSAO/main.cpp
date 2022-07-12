@@ -10,7 +10,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 
-#include "..\src\GLSLShader.h"
+#include "GLSLShader.h"
 #include <vector>
 #include "Obj.h"
 

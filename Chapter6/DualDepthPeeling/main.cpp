@@ -6,7 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "..\src\GLSLShader.h"
+#include "GLSLShader.h"
 
 #define GL_CHECK_ERRORS assert(glGetError()== GL_NO_ERROR);
 
@@ -36,7 +36,7 @@ int state = 0, oldX=0, oldY=0;
 float rX=0, rY=300, dist = -10;
 
 //grid object
-#include "..\src\Grid.h"
+#include "Grid.h"
 CGrid* grid;
 
 //modelview projection and rotation matrices

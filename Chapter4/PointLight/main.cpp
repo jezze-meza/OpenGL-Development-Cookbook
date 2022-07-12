@@ -11,7 +11,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 
-#include "../src/GLSLShader.h"
+#include "GLSLShader.h"
 
 #define GL_CHECK_ERRORS assert(glGetError()== GL_NO_ERROR);
 
@@ -66,7 +66,7 @@ int state = 0, oldX=0, oldY=0;
 float rX=25, rY=-40, dist = -10;
 
 //grid object
-#include "../src/Grid.h"
+#include "Grid.h"
 CGrid* grid;
 
 glm::vec3 lightPosOS=glm::vec3(0, 2,0); //objectspace light position

@@ -47,12 +47,12 @@ GLuint skyboxTextureID;
 CWaterSurface* water;
 
 
-const char* texture_names[6] = {"../../media/skybox/ocean/posx.png",
-								"../../media/skybox/ocean/negx.png", 
-								"../../media/skybox/ocean/posy.png",   
-								"../../media/skybox/ocean/negy.png", 
-								"../../media/skybox/ocean/posz.png",
-								"../../media/skybox/ocean/negz.png"}; 
+const char* texture_names[6] = {"media/skybox/ocean/posx.png",
+								"media/skybox/ocean/negx.png",
+								"media/skybox/ocean/posy.png",
+								"media/skybox/ocean/negy.png",
+								"media/skybox/ocean/posz.png",
+								"media/skybox/ocean/negz.png"};
 							 
 
  /*
@@ -214,7 +214,7 @@ void OnRender() {
 
 }
 
-void main(int argc, char** argv) {
+int main(int argc, char** argv) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);	
 	glutInitContextVersion (3, 3);
@@ -252,4 +252,6 @@ void main(int argc, char** argv) {
 	glutMotionFunc(OnMouseMove);
 	glutIdleFunc(OnIdle);
 	glutMainLoop();	
+
+	return 0;
 }

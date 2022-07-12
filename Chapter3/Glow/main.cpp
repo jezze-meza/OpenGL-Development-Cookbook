@@ -4,11 +4,16 @@
 #include <GL/freeglut.h>
 #include <iostream>
 
+#ifdef __linux__
+#include <GL/glx.h>
+#include <X11/keysymdef.h>
+#endif
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "..\src\GLSLShader.h"
+#include "GLSLShader.h"
 
 #define GL_CHECK_ERRORS assert(glGetError()== GL_NO_ERROR);
 
@@ -36,8 +41,9 @@ int state = 0, oldX=0, oldY=0;
 float rX=0, rY=0, fov = 45;
 
 
-#include "..\src\FreeCamera.h"
+#include "FreeCamera.h"
 
+#ifdef _WIN32
 //virtual key codes
 const int VK_W = 0x57;
 const int VK_S = 0x53;
@@ -45,6 +51,16 @@ const int VK_A = 0x41;
 const int VK_D = 0x44;
 const int VK_Q = 0x51;
 const int VK_Z = 0x5a;
+#else
+
+const KeySym VK_W = XK_w;
+const KeySym VK_S = XK_s;
+const KeySym VK_A = XK_a;
+const KeySym VK_D = XK_d;
+const KeySym VK_Q = XK_q;
+const KeySym VK_Z = XK_z;
+
+#endif
 
 //espsilon epsilon2 for accuracy
 const float EPSILON = 0.001f;
@@ -58,11 +74,11 @@ CFreeCamera cam;
 std::stringstream msg;
 
 //Grid object
-#include "..\src\Grid.h"
+#include "Grid.h"
 CGrid* grid;
 
 //Unit cube object
-#include "..\src\UnitCube.h"
+#include "UnitCube.h"
 CUnitCube* cube;
 
 //modelview, projection and rotation matrices
@@ -381,6 +397,18 @@ void OnResize(int w, int h) {
 	cam.SetupProjection(fov, (GLfloat)w/h);
 }
 
+#ifdef __linux__
+bool GetAsyncKeyState(KeySym sym) {
+    Display *display = glXGetCurrentDisplay();
+    KeyCode code = XKeysymToKeycode(display, sym);
+
+    if (code == NoSymbol) return false;
+    static char key_vector[32];
+    XQueryKeymap(display, key_vector);
+    return (key_vector[code/8] >> (code&7)) & 1;
+}
+#endif
+
 //idle callback function
 void OnIdle() {
 	//generate a rotation matrix to rotate on the Y axis each idle event
@@ -388,6 +416,8 @@ void OnIdle() {
 	Rot = glm::rotate(glm::mat4(1), angle, glm::vec3(0,1,0));
 
 	//handle the WSAD QZ key events to move the camera around
+
+#ifdef _WIN32
 	if( GetAsyncKeyState(VK_W) & 0x8000) {
 		cam.Walk(dt);
 	}
@@ -411,6 +441,32 @@ void OnIdle() {
 	if( GetAsyncKeyState(VK_Z) & 0x8000) {
 		cam.Lift(-dt);
 	}
+#else
+	if( GetAsyncKeyState(VK_W) ) {
+		cam.Walk(dt);
+	}
+
+	if( GetAsyncKeyState(VK_S) ) {
+		cam.Walk(-dt);
+	}
+
+	if( GetAsyncKeyState(VK_A) ) {
+		cam.Strafe(-dt);
+	}
+
+	if( GetAsyncKeyState(VK_D) ) {
+		cam.Strafe(dt);
+	}
+
+	if( GetAsyncKeyState(VK_Q) ) {
+		cam.Lift(dt);
+	}
+
+	if( GetAsyncKeyState(VK_Z) ) {
+		cam.Lift(-dt);
+	}
+#endif
+
 	glm::vec3 t = cam.GetTranslation(); 
 
 	if(glm::dot(t,t)>EPSILON2) {

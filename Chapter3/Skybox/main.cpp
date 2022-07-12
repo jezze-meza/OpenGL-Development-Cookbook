@@ -8,7 +8,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "..\src\GLSLShader.h"
+#include "GLSLShader.h"
 
 #include <SOIL.h>
 
@@ -42,19 +42,19 @@ int state = 0, oldX=0, oldY=0;
 float rX=-3, rY=65, dist = -7;
 
 //skybox object
-#include "../src/skybox.h"
+#include "Skybox.h"
 CSkybox* skybox;
 
 //skybox texture ID
 GLuint skyboxTextureID;
 
 //skybox texture names
-const char* texture_names[6] = {"../media/skybox/ocean/posx.png",
-								"../media/skybox/ocean/negx.png",
-								"../media/skybox/ocean/posy.png",
-								"../media/skybox/ocean/negy.png",
-								"../media/skybox/ocean/posz.png",
-								"../media/skybox/ocean/negz.png"};
+const char* texture_names[6] = {"media/skybox/ocean/posx.png",
+								"media/skybox/ocean/negx.png",
+								"media/skybox/ocean/posy.png",
+								"media/skybox/ocean/negy.png",
+								"media/skybox/ocean/posz.png",
+								"media/skybox/ocean/negz.png"};
 //mouse click handler
 void OnMouseDown(int button, int s, int x, int y)
 {
